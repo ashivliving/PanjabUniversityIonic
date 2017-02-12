@@ -15,8 +15,29 @@ import {
 export class HomePage {
   private _latitude: number;
   private _longitude: number;
+  loc;
 
-  constructor() {}
+  constructor() {
+    this.loc = [
+        { id: '0', title: 'Boys Hostel 8', latitude: '30.7493628', longitude: '76.759254'   },
+        { id: '1', title: 'Girls Hostel 3', latitude: '30.757250', longitude: '76.765439'   },
+        { id: '2', title: 'UIET', latitude: '30.748251', longitude: '76.757242'   },
+        { id: '3', title: 'Admin Block', latitude: '30.757785', longitude: '76.768035'   },
+        { id: '4', title: 'A.C. Joshi Library', latitude: '30.761316', longitude: '76.769977'   },
+        { id: '5', title: 'University Buisness School', latitude: '30.762781', longitude: '76.771232'   },
+        { id: '6', title: 'Gymnasium Hall', latitude: '30.762155', longitude: '76.765342'   },
+        { id: '7', title: 'Law Auditorium', latitude: '30.763611', longitude: '76.770642'   },
+        { id: '8', title: 'UILS', latitude: '30.766810', longitude: '76.766877'   },
+        { id: '9', title: 'UIAMS', latitude: '30.752981', longitude: '76.762531'   },
+        { id: '10', title: 'SBI Bank', latitude: '30.756429', longitude: '76.766587'   },
+        { id: '11', title: 'P.U. Dispensary', latitude: '30.756660', longitude: '76.768239'   },
+        { id: '12', title: 'Student Center', latitude: '30.762219', longitude: '76.769484'   },
+        { id: '13', title: 'Inter. Women Hostel', latitude: '30.752704', longitude: '76.758111'   },
+        { id: '14', title: 'PU Gate no. 2', latitude: '30.754779', longitude: '76.768937'   },
+        { id: '15', title: 'PU Gate no. 1', latitude: '30.761168', longitude: '76.774022'   },
+        { id: '16', title: 'PU Gate no. 3', latitude: '30.755369', longitude: '76.762145'   }
+      ];
+  }
 
   ngAfterViewInit() {
     let map = new GoogleMap(document.getElementById('map'));
@@ -54,7 +75,11 @@ export class HomePage {
                   title: 'Click to Know More!',
                   draggable : true
                 }).then((marker: GoogleMapsMarker) => {
-                  marker.showInfoWindow();
+                  for(let i=0;i<this.loc.length;i++)
+                  {
+                    console.log(i+' - '+this.distance(latLng.lat,latLng.lng,this.loc[i].latitude,this.loc[i].longitude));
+                  }
+                  //marker.showInfoWindow();
                 });
                 //alert('MAP_CLICK - '+latLng.toUrlValue());
               });
@@ -150,5 +175,15 @@ export class HomePage {
         });
       });
     });
+  }
+
+  distance(lat1,lng1,lat2,lng2) {
+    let p = 0.017453292519943295;    // Math.PI / 180
+    let c = Math.cos;
+    let a = 0.5 - c((lat2 - lat1) * p)/2 + 
+            c(lat1 * p) * c(lat2 * p) * 
+            (1 - c((lng2 - lng1) * p))/2;
+
+    return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
   }
 }
