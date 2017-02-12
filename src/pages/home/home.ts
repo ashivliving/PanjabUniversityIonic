@@ -15,7 +15,9 @@ import {
 export class HomePage {
   private _latitude: number;
   private _longitude: number;
-  loc;
+  public loc;
+  public least_index;
+  public least_dis;
 
   constructor() {
     this.loc = [
@@ -41,6 +43,7 @@ export class HomePage {
 
   ngAfterViewInit() {
     let map = new GoogleMap(document.getElementById('map'));
+    
     //let marker: GoogleMapsMarker;
 
     // when the map is ready
@@ -52,7 +55,7 @@ export class HomePage {
         // move the camera
         map.moveCamera({
           target: new GoogleMapsLatLng(this._latitude, this._longitude),
-          zoom: 18,
+          zoom: 16,
           tilt: 30
         }).then(() => {
 
@@ -70,17 +73,28 @@ export class HomePage {
             map.on(GoogleMapsEvent.MAP_CLICK).subscribe(
               (latLng) => {
                 map.clear();
-                 map.addMarker({
-                  position: new GoogleMapsLatLng(latLng.lat,latLng.lng),
-                  title: 'Click to Know More!',
-                  draggable : true
-                }).then((marker: GoogleMapsMarker) => {
-                  for(let i=0;i<this.loc.length;i++)
-                  {
-                    console.log(i+' - '+this.distance(latLng.lat,latLng.lng,this.loc[i].latitude,this.loc[i].longitude));
+                 this.least_index = 0;
+                 this.least_dis = this.distance(latLng.lat,latLng.lng,this.loc[this.least_index].latitude,this.loc[this.least_index].longitude)
+                 for(let i=1;i<this.loc.length;i++)
+                  { //console.log(this.loc[i].title+' - '+this.distance(latLng.lat,latLng.lng,this.loc[i].latitude,this.loc[i].longitude));
+                    if(this.least_dis >= this.distance(latLng.lat,latLng.lng,this.loc[i].latitude,this.loc[i].longitude))
+                     { this.least_index = i;
+                       this.least_dis = this.distance(latLng.lat,latLng.lng,this.loc[i].latitude,this.loc[i].longitude);
+                     } 
                   }
-                  //marker.showInfoWindow();
+                 map.addMarker({
+                  position: new GoogleMapsLatLng(this.loc[this.least_index].latitude,this.loc[this.least_index].longitude),
+                  title: this.loc[this.least_index].title
+                }).then((marker: GoogleMapsMarker) => {
+                     map.moveCamera({
+                      target: new GoogleMapsLatLng(this.loc[this.least_index].latitude,this.loc[this.least_index].longitude),
+                      zoom: 16,
+                      tilt: 30
+                    });
+                    marker.showInfoWindow();
+                    //this.least_dis = 9999;
                 });
+
                 //alert('MAP_CLICK - '+latLng.toUrlValue());
               });
             
